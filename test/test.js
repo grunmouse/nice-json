@@ -1,6 +1,7 @@
 //let fsp = require('fs').promises;
 const assert = require('assert').strict;
 const niceJSON = require('../index.js');
+const sinon = require('sinon');
 
 async function assertJSON(objpath, stringify, strpath, message){
 	let source = await fsp.readFile(objpath);
@@ -17,7 +18,19 @@ async function assertJSON(objpath, stringify, strpath, message){
 }
 
 function assertEqualStringify(arg, message){
-	assert.equal(niceJSON(...arg), JSON.stringify(...arg));
+	assert.equal(niceJSON(...arg), JSON.stringify(...arg), message);
+}
+
+function assertEqualCalls(obj, replacer, message){
+	let standart = sinon.spy(replacer);
+	let nice = sinon.spy(replacer);
+	assert.equal(niceJSON(obj, nice), JSON.stringify(obj, standart), message);
+	
+	//assert.deepEqual(
+	assert.equal(nice.callCount, standart.callCount);
+	for(let i=0; i<nice.callCount; ++i){
+		assert.deepEqual(nice.getCall(i), standart.getCall(i));
+	}
 }
 
 describe('NiceJSON', ()=>{
@@ -39,9 +52,11 @@ describe('NiceJSON', ()=>{
 			});
 		});
 		describe('with tab', ()=>{
+		});
+		describe('replacer', ()=>{
 			samples.forEach((sample, i)=>{
 				it('sample '+i, ()=>{
-					assertEqualStringify([sample, '', '\t'])
+					assertEqualCalls(sample, (key, a)=>(a));
 				});
 			});
 		});

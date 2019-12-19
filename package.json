@@ -13,6 +13,8 @@
     "email": "grunmouse@mail.ru"
   },
   "license": "MIT",
-  "dependencies": {},
-  "dev": true
+  "dev": true,
+  "devDependencies": {
+    "sinon": "^7.5.0"
+  }
 }
